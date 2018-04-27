@@ -2,6 +2,7 @@ package com.gearreald.BotGameServer.games.hearts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,7 +119,12 @@ public class Hearts implements Game {
 			}
 			pointCounts.put(playerUUID, pointCounts.get(playerUUID) + earnedPoints);
 		}
+		this.hands.forEach((String s, List<Card> cards) -> {
+			cards.clear();
+		});
+		this.wonCards.clear();
 		stage = "pass";
+		dealHands();
 		progressPassingStage();
 	}
 	
@@ -217,6 +223,7 @@ public class Hearts implements Game {
 		}
 		List<Card> winningPlayerPile = wonCards.get(winningPlayer.getUUID());
 		cardsOnTable.forEach((String s, Card c) -> {winningPlayerPile.add(c);});
+		this.previousRounds.add(cardsOnTable);
 		cardsOnTable.clear();
 		currentPlayer = winningPlayer;
 	}
@@ -234,16 +241,35 @@ public class Hearts implements Game {
 		this.wonCards = new HashMap<String, List<Card>>();
 		this.previousRounds = new ArrayList<Map<String, Card>>();
 		this.pointCounts = new HashMap<String, Integer>();
+		this.cardsOnTable = new HashMap<String, Card>();
+		this.players = new ArrayList<Player>();
 		for(Player p: players){
 			this.players.add(p);
 			this.hands.put(p.getUUID(), new ArrayList<Card>());
 			this.wonCards.put(p.getUUID(), new ArrayList<Card>());
 			this.pointCounts.put(p.getUUID(), 0);
 		}
+		this.currentPlayer = this.players.get(0);
+		dealHands();
 	}
 
+	private void dealHands(){
+		List<Card> deck = Card.createDeck();
+		int playerNumber = 0;
+		Collections.shuffle(deck);
+		for(Card c: deck){
+			String playerUUID = this.players.get(playerNumber).getUUID();
+			this.hands.get(playerUUID).add(c);
+		}
+	}
+	
 	@Override
 	public int getRequiredPlayers() {
 		return REQUIRED_PLAYERS;
+	}
+
+	@Override
+	public String getName() {
+		return "hearts";
 	}
 }

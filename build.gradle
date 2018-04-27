@@ -44,6 +44,8 @@ dependencies {
   implementation 'com.sparkjava:spark-core:2.7.2'
   implementation 'org.xerial:sqlite-jdbc:3.21.0.1'
   implementation 'org.flywaydb:flyway-gradle-plugin:5.0.7'
+  implementation group: 'com.sparkjava', name: 'spark-debug-tools', version: '0.5'
+  
   compile 'org.json:json:20180130'
   // Declare the dependency for your favourite test framework you want to use in your tests.
   // TestNG is also supported by the Gradle Test task. Just change the

@@ -15,6 +15,7 @@ public interface Game {
 	public void fromJSON(JSONObject json);
 	public void initialize(List<Player> p);
 	public int getRequiredPlayers();
+	public String getName();
 	public static int getRequiredPlayersOfGame(String name){
 		if(name.equals("hearts")){
 			Game hearts = new Hearts();
