@@ -43,19 +43,16 @@ public class SQLConnection {
 	public static boolean runMigrations(){
 		Flyway flyway = new Flyway();
 		flyway.setDataSource("jdbc:sqlite:"+sqliteFileName,"sa",null);
-		//flyway.setLocations("C:/Users/tgearr34/eclipse/Work Personal/BotGameServer/bin/db/migration");
-		flyway.setLocations("classpath:in/db/migration");
+		//flyway.setLocations("classpath:/db/migration");
 		System.out.println("Migrating...");
-		for (String s:flyway.getLocations())
+		/*for (String s:flyway.getLocations())
 			System.out.println(s);
 		ClassLoader cl = ClassLoader.getSystemClassLoader();
 		URL[] urls = ((URLClassLoader)cl).getURLs();
         for(URL url: urls){
         	System.out.println(url.getFile());
-        }
+        }*/
 		flyway.migrate();
 		return true;
 	}
-	
-	
 }
