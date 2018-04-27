@@ -32,4 +32,7 @@ public interface Game {
 			return null;
 		}
 	}
+	//public static Game getGameFromState(String name, JSONObject gameState){
+		
+	//}
 }

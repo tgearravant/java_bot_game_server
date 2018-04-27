@@ -1,4 +1,4 @@
-package com.gearreald.BotGameServer;
+package com.gearreald.BotGameServer.server;
 
 import static spark.Spark.*;
 import static spark.debug.DebugScreen.enableDebugScreen;
@@ -30,11 +30,11 @@ public class Server implements SparkApplication {
 		enableDebugScreen();
 	}
 	public static void getRouting(){
-		//get(Path.MATCHMAKING, MatchRequestController.matchRequestGet);
+		get(Path.MATCHMAKING_STATUS, MatchRequestController.matchRequestGet);
+		get(Path.NEW_MATCHMAKING, MatchRequestController.newMatchRequest);
 		get(Path.GAME_STATUS, MatchController.matchGet);
 	}
 	public static void postRouting(){
-		get(Path.MATCHMAKING, MatchRequestController.matchRequestPost);
 	}
 	public static void exit(){
 		stop();

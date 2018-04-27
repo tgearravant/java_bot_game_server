@@ -36,6 +36,12 @@ public class Card implements Comparable<Card>, JSONable {
 		if(suitCompare != 0){
 			return suitCompare;
 		}else{
+			/*
+			if(this.value == 1)
+				return 1;
+			if(o.value == 1)
+				return -1;
+			*/
 			return numberCompare;
 		}
 	}

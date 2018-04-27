@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.gearreald.BotGameServer.Action;
@@ -80,7 +81,7 @@ public class Hearts implements Game {
 			passingOrders.add(Pair.of(players.get(2).getUUID(), players.get(0).getUUID()));
 			passingOrders.add(Pair.of(players.get(3).getUUID(), players.get(1).getUUID()));
 		}else{
-			return false;
+			return true;
 		}
 		for(String playerUUID: cardsOnTable.keySet()){
 			Pair<String, String> passPatternForPlayer = null;
@@ -113,7 +114,7 @@ public class Hearts implements Game {
 			for(Card c: wonCards.get(playerUUID)){
 				if(c.getSuit().equals("hearts"))
 					earnedPoints++;
-				if(c.getSuit().equals("spades") && c.getValue() == 12){
+				if(c.getSuit().equals("spades") && c.getValue() == 11){
 					earnedPoints+=13;
 				}
 			}
@@ -131,7 +132,7 @@ public class Hearts implements Game {
 	private void progressPassingStage(){
 		int currentIndex = PASSING_STAGES.indexOf(passingStage);
 		currentIndex++;
-		currentIndex = currentIndex % 4;
+		currentIndex = currentIndex % PASSING_STAGES.size();
 		passingStage = PASSING_STAGES.get(currentIndex);
 	}
 
@@ -230,6 +231,60 @@ public class Hearts implements Game {
 	
 	@Override
 	public void fromJSON(JSONObject json) {
+		this.stage = json.getString("stage");
+		this.winningPlayer = Player.fromJSON(json.optJSONObject("winning_player"));
+		this.passingStage = json.getString("passing_stage");
+		JSONArray playerArray = json.getJSONArray("players");
+		for(int i = 0; i < playerArray.length(); i++){
+			Player p = Player.fromJSON(playerArray.getJSONObject(i));
+			this.players.add(p);
+		}
+		this.hands = new HashMap<String, List<Card>>();
+		JSONObject handsJson = json.getJSONObject("hands");
+		for(Player p: this.players){
+			JSONArray playerHandJson = handsJson.optJSONArray(p.getUUID());
+			List<Card> playerHand = new ArrayList<Card>();
+			if(playerHandJson != null){
+				for(int i = 0; i < playerHandJson.length(); i++){
+					playerHand.add(Card.fromJSON(playerHandJson.getJSONObject(i)));
+				}
+			}
+			this.hands.put(p.getUUID(), playerHand);
+		}
+		this.wonCards = new HashMap<String, List<Card>>();
+		JSONObject wonCards = json.getJSONObject("won_cards");
+		for(Player p: this.players){
+			JSONArray playerWonJson = wonCards.optJSONArray(p.getUUID());
+			List<Card> playerWon = new ArrayList<Card>();
+			if(playerWonJson != null){
+				for(int i = 0; i < playerWonJson.length(); i++){
+					playerWon.add(Card.fromJSON(playerWonJson.getJSONObject(i)));
+				}
+			}
+			this.wonCards.put(p.getUUID(), playerWon);
+		}
+		this.previousRounds = new ArrayList<Map<String, Card>>();
+		JSONArray previousRounds = json.getJSONArray("previous_rounds");
+		for(int i=0; i < previousRounds.length(); i++){
+			Map<String, Card> roundMap = new HashMap<String, Card>();
+			JSONObject roundJSON = previousRounds.getJSONObject(i);
+			for(String playerId: roundJSON.keySet()){
+				roundMap.put(playerId, Card.fromJSON(roundJSON.getJSONObject(playerId)));
+			}
+			this.previousRounds.add(roundMap);
+		}
+		this.pointCounts = new HashMap<String, Integer>();
+		JSONObject pointCountJSON = json.getJSONObject("point_counts");
+		for(String playerId: pointCountJSON.keySet()){
+			this.pointCounts.put(playerId, pointCountJSON.getInt(playerId));
+		}
+		this.cardsOnTable = new HashMap<String, Card>();
+		JSONObject cardsOnTableJSON = json.getJSONObject("cards_on_table");
+		for(String playerId: cardsOnTableJSON.keySet()){
+			this.cardsOnTable.put(playerId, Card.fromJSON(cardsOnTableJSON.getJSONObject(playerId)));
+		}
+		this.currentPlayer = Player.fromJSON(json.getJSONObject("current_player"));
+		dealHands();
 	}
 
 	@Override
@@ -260,6 +315,8 @@ public class Hearts implements Game {
 		for(Card c: deck){
 			String playerUUID = this.players.get(playerNumber).getUUID();
 			this.hands.get(playerUUID).add(c);
+			playerNumber++;
+			playerNumber = playerNumber % 4;
 		}
 	}
 	

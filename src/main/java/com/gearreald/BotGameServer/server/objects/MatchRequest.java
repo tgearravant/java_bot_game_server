@@ -44,16 +44,17 @@ public class MatchRequest {
 	}
 	public static  MatchRequest getMatchRequestByPlayer(String playerUUID, String gameName) throws SQLException{
 		SQLUtil sql = SQLConnection.getConnection();
-		ResultSet rs = sql.executeSelect(String.format("SELECT * FROM match_requests WHERE player_uuid = '%s' AND game_name = '%s'", playerUUID, gameName));
+		String query = String.format("SELECT * FROM match_requests WHERE player_uuid = '%s' AND game_name = '%s'", playerUUID, gameName);
+		ResultSet rs = sql.executeSelect(query);
 		if(!rs.isBeforeFirst())
 			return null;
 		rs.next();
 		return new MatchRequest(rs);
 	}
-	public static List<MatchRequest> getMatchRequestsForGame(String gameName) throws SQLException{
+	public static List<MatchRequest> getUnsatifiedMatchRequestsForGame(String gameName) throws SQLException{
 		SQLUtil sql = SQLConnection.getConnection();
 		List<MatchRequest> matchRequests = new ArrayList<MatchRequest>();
-		ResultSet rs = sql.executeSelect(String.format("SELECT * FROM match_requests WHERE game_name = '%s'", gameName));
+		ResultSet rs = sql.executeSelect(String.format("SELECT * FROM match_requests WHERE game_name = '%s' AND satisfied = 0", gameName));
 		while(rs.next())
 			matchRequests.add(new MatchRequest(rs));
 		return matchRequests;
