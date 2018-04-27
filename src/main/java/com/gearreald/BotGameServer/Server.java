@@ -1,18 +1,35 @@
 package com.gearreald.BotGameServer;
 
 import static spark.Spark.*;
+
+import com.gearreald.BotGameServer.utils.SQLConnection;
+
 import spark.servlet.SparkApplication;
 
-public class Server {
+public class Server implements SparkApplication {
 	public static void staticLaunch(){
+		configureInstance();
+	}
+	public void init(){
+		configureInstance();
+	}
+	public static void configureInstance(){
+		initialConfiguration();
+    	getRouting();
+    	postRouting();
+	}
+	public static void initialConfiguration(){
+		SQLConnection.runMigrations();
+		staticFiles.location("/public");
+		port(12345);
+	}
+	public static void getRouting(){
 		
 	}
-	public void instanceLaunch(){
-		SQLUtils.runMigrations();
-		SystemUtils.checkForRequiredProperties();
-		if(!SystemUtils.inTesting())
-			UserController.createAdmin(SystemUtils.getProperty("admin_username"), SystemUtils.getProperty("admin_password"));
-		staticFiles.location("/public");
-		port(Integer.parseInt(SystemUtils.getProperty("port", "12345")));
+	public static void postRouting(){
+		
+	}
+	public static void exit(){
+		stop();
 	}
 }
