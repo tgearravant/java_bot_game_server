@@ -300,10 +300,14 @@ public class Hearts implements Game {
 			}
 		}
 		List<Card> winningPlayerPile = wonCards.get(winningPlayer.getUUID());
-		cardsOnTable.forEach((String s, Card c) -> {winningPlayerPile.add(c);});
+		cardsOnTable.forEach((String s, Card c) -> {
+			winningPlayerPile.add(c);
+			
+		});
 		this.previousRounds.add(cardsOnTable);
-		cardsOnTable.clear();
+		cardsOnTable = new HashMap<String, Card>();
 		currentPlayer = winningPlayer;
+		this.leadingPlayer = winningPlayer;
 	}
 	
 	@Override
