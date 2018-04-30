@@ -10,8 +10,8 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.gearreald.BotGameServer.Action;
 import com.gearreald.BotGameServer.Player;
+import com.gearreald.BotGameServer.games.Action;
 import com.gearreald.BotGameServer.games.Game;
 import com.gearreald.BotGameServer.utils.JSONUtils;
 
@@ -28,6 +28,8 @@ public class Hearts implements Game {
 	private String passingStage;
 	private List<Player> players;
 	private Player currentPlayer;
+	private Player dealer;
+	private Player leadingPlayer;
 	private Player winningPlayer;
 	private Map<String, Card> cardsOnTable;
 	private Map<String, List<Card>> hands;
@@ -39,8 +41,10 @@ public class Hearts implements Game {
 	public JSONObject getGameState() {
 		JSONObject json = new JSONObject();
 		json.put("stage", stage)
-			.put("current_player", currentPlayer.getUUID())
+			.put("current_player", currentPlayer.toJSON())
 			.put("cards_on_table", JSONUtils.jsonMapToJSON(cardsOnTable))
+			.put("dealer", this.dealer.toJSON())
+			.put("leading_player", leadingPlayer.toJSON())
 			.put("winning_player", winningPlayer)
 			.put("passing_stage", passingStage)
 			.put("players", JSONUtils.listToJSON(this.players))
@@ -56,6 +60,7 @@ public class Hearts implements Game {
 		JSONObject gameState = getGameState();
 		JSONObject playerHand = new JSONObject();
 		playerHand.put(p.getUUID(), JSONUtils.listToJSON(getPlayerHand(p)));
+		gameState.remove("hands");
 		gameState.put("hands", playerHand);
 		if(stage.equals("pass"))
 			gameState.remove("cards_on_table");
@@ -75,7 +80,7 @@ public class Hearts implements Game {
 			passingOrders.add(Pair.of(players.get(1).getUUID(), players.get(0).getUUID()));
 			passingOrders.add(Pair.of(players.get(2).getUUID(), players.get(1).getUUID()));
 			passingOrders.add(Pair.of(players.get(3).getUUID(), players.get(2).getUUID()));
-		}else if (passingStage.equals("right")){
+		}else if (passingStage.equals("across")){
 			passingOrders.add(Pair.of(players.get(0).getUUID(), players.get(2).getUUID()));
 			passingOrders.add(Pair.of(players.get(1).getUUID(), players.get(3).getUUID()));
 			passingOrders.add(Pair.of(players.get(2).getUUID(), players.get(0).getUUID()));
@@ -102,11 +107,21 @@ public class Hearts implements Game {
 	public List<Card> getPlayerHand(Player p){
 		String playerUUID = p.getUUID();
 		for(String handUUID: hands.keySet()){
-			if(handUUID == playerUUID){
+			if(handUUID.equals(playerUUID)){
 				return hands.get(handUUID); 
 			}
 		}
 		return null;
+	}
+	public boolean playerHandContainsSuit(Player p, String suit){
+		String playerUUID = p.getUUID();
+		List<Card> playerHand = this.hands.get(playerUUID);
+		for(Card c: playerHand){
+			if(c.getSuit().equals(suit)){
+				return true;
+			}
+		}
+		return false;
 	}
 	private void endRound(){
 		for(String playerUUID: wonCards.keySet()){
@@ -127,6 +142,8 @@ public class Hearts implements Game {
 		stage = "pass";
 		dealHands();
 		progressPassingStage();
+		this.dealer = nextDealer();
+		this.currentPlayer = this.dealer;
 	}
 	
 	private void progressPassingStage(){
@@ -135,6 +152,22 @@ public class Hearts implements Game {
 		currentIndex = currentIndex % PASSING_STAGES.size();
 		passingStage = PASSING_STAGES.get(currentIndex);
 	}
+	private boolean canLeadHearts(Player p){
+		for (Map<String, Card> previousRound: previousRounds){
+			for(String player: previousRound.keySet()){
+				if(previousRound.get(player).getSuit().equals("hearts")){
+					return true;
+				}
+			}
+		}
+		if(this.leadingPlayer.equals(p)
+				&& !playerHandContainsSuit(p, "clubs")
+				&& !playerHandContainsSuit(p, "diamonds")
+				&& !playerHandContainsSuit(p, "spades")){
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public JSONObject takeAction(Action action) {
@@ -142,6 +175,7 @@ public class Hearts implements Game {
 		Card cardToPlay = Card.fromJSON(action.getAction());
 		List<Card> playerHand = getPlayerHand(player);
 		JSONObject actionResult = new JSONObject();
+		Card leadCard = this.cardsOnTable.get(this.leadingPlayer.getUUID());
 		if(!playerHand.contains(cardToPlay)){
 			return actionResult.put("action_result", "error").put("error_message", "player doesn't have the specified card");
 		}
@@ -151,20 +185,41 @@ public class Hearts implements Game {
 		if(winningPlayer != null){
 			return actionResult.put("action_result", "error").put("error_message", "the game is already over");
 		}
+		if(!this.currentPlayer.equals(this.leadingPlayer)
+				&& this.stage.equals("play")
+				&& !(cardToPlay.getSuit().equals(leadCard.getSuit())
+						|| !playerHandContainsSuit(currentPlayer, cardToPlay.getSuit()))){
+			return actionResult.put("action_result", "error").put("error_message", "you must follow suit");
+		}
+		if(this.currentPlayer.equals(this.leadingPlayer)
+				&& this.stage.equals("play")
+				&& cardToPlay.getSuit().equals("hearts")
+				&& !canLeadHearts(currentPlayer)){
+			return actionResult.put("action_result", "error").put("error_message", "hearts is not broken");
+		}
+		if(this.currentPlayer.equals(this.leadingPlayer)
+				&& this.stage.equals("play")
+				&& this.previousRounds.size() == 0
+				&& !cardToPlay.equals(new Card("clubs", 1))){
+			return actionResult.put("action_result", "error").put("error_message", "you must lead the two of clubs");
+		}
 		playerHand.remove(cardToPlay);
 		cardsOnTable.put(player.getUUID(), cardToPlay);
 		if (stage.equals("pass")){
 			if(cardsOnTable.size() == REQUIRED_PLAYERS){
 				passCards();
+				this.currentPlayer = getPlayerByCard(new Card("clubs", 1));
+				this.leadingPlayer = this.currentPlayer;
 				stage = "play";
+			}else{
+				this.currentPlayer = nextPlayer();
 			}
 		}
 		else{
 			if(cardsOnTable.size() == REQUIRED_PLAYERS){
 				resolveTrick();
 			}else{
-				int nextPlayerIndex = players.indexOf(currentPlayer) + 1;
-				currentPlayer = players.get(nextPlayerIndex);
+				this.currentPlayer = nextPlayer();
 			}
 			int remainingCards = cardsRemainingInHands();
 			if (remainingCards==0){
@@ -206,8 +261,30 @@ public class Hearts implements Game {
 		}
 		return null;
 	}
+	private Player getPlayerByCard(Card c){
+		for(String playerUUID: this.hands.keySet()){
+			for(Card playerCard: this.hands.get(playerUUID)){
+				if(playerCard.equals(c)){
+					return getPlayerByUUID(playerUUID);
+				}
+			}
+		}
+		return null;
+	}
+	private Player nextPlayer(){
+		int playerIndex = this.players.indexOf(this.currentPlayer);
+		playerIndex++;
+		playerIndex = playerIndex % REQUIRED_PLAYERS;
+		return this.players.get(playerIndex);
+	}
+	private Player nextDealer(){
+		int playerIndex = this.players.indexOf(this.dealer);
+		playerIndex++;
+		playerIndex = playerIndex % REQUIRED_PLAYERS;
+		return this.players.get(playerIndex);
+	}
 	private void resolveTrick(){
-		Player leadingPlayer = this.players.get((players.indexOf(currentPlayer) + 1) % 4);
+		Player leadingPlayer = this.players.get((players.indexOf(currentPlayer) + 1) % REQUIRED_PLAYERS);
 		Card leadingCard = cardsOnTable.get(leadingPlayer.getUUID());
 		Card winningCard = leadingCard;
 		Player winningPlayer = leadingPlayer;
@@ -232,9 +309,16 @@ public class Hearts implements Game {
 	@Override
 	public void fromJSON(JSONObject json) {
 		this.stage = json.getString("stage");
-		this.winningPlayer = Player.fromJSON(json.optJSONObject("winning_player"));
+		JSONObject winningPlayerJSON = json.optJSONObject("winning_player");
+		if(winningPlayerJSON == null)
+			this.winningPlayer = null;
+		else
+			this.winningPlayer = Player.fromJSON(winningPlayerJSON);
+		this.leadingPlayer = Player.fromJSON(json.getJSONObject("leading_player"));
+		this.dealer = Player.fromJSON(json.getJSONObject("dealer"));
 		this.passingStage = json.getString("passing_stage");
 		JSONArray playerArray = json.getJSONArray("players");
+		this.players = new ArrayList<Player>();
 		for(int i = 0; i < playerArray.length(); i++){
 			Player p = Player.fromJSON(playerArray.getJSONObject(i));
 			this.players.add(p);
@@ -284,7 +368,6 @@ public class Hearts implements Game {
 			this.cardsOnTable.put(playerId, Card.fromJSON(cardsOnTableJSON.getJSONObject(playerId)));
 		}
 		this.currentPlayer = Player.fromJSON(json.getJSONObject("current_player"));
-		dealHands();
 	}
 
 	@Override
@@ -305,6 +388,8 @@ public class Hearts implements Game {
 			this.pointCounts.put(p.getUUID(), 0);
 		}
 		this.currentPlayer = this.players.get(0);
+		this.dealer = this.currentPlayer;
+		this.leadingPlayer = this.dealer;
 		dealHands();
 	}
 
@@ -328,5 +413,10 @@ public class Hearts implements Game {
 	@Override
 	public String getName() {
 		return "hearts";
+	}
+
+	@Override
+	public JSONObject getGameStateAsPlayer(String playerUUID) {
+		return this.getGameStateAsPlayer(this.getPlayerByUUID(playerUUID));
 	}
 }

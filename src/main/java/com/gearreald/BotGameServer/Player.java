@@ -7,8 +7,8 @@ import org.json.JSONObject;
 import com.gearreald.BotGameServer.utils.JSONable;
 
 public class Player implements JSONable {
-	private String uuid;
-	private int botId;
+	private final String uuid;
+	private final int botId;
 	public Player(String uuid, int botId){
 		this.uuid=uuid;
 		this.botId=botId;

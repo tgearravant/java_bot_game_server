@@ -35,6 +35,7 @@ public class Server implements SparkApplication {
 		get(Path.GAME_STATUS, MatchController.matchGet);
 	}
 	public static void postRouting(){
+		post(Path.TAKE_ACTION, MatchController.takeAction);
 	}
 	public static void exit(){
 		stop();

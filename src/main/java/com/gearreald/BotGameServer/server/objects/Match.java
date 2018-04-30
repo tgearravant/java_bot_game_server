@@ -3,6 +3,8 @@ package com.gearreald.BotGameServer.server.objects;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.json.JSONObject;
+
 import com.gearreald.BotGameServer.games.Game;
 import com.gearreald.BotGameServer.utils.SQLConnection;
 
@@ -34,11 +36,15 @@ public class Match {
 	}
 	public void save() throws SQLException{
 		SQLUtil sql = SQLConnection.getConnection();
-		sql.executeUpdate(String.format("UPDATE match_requests SET game_state = '%s' WHERE id = %d", this.gameState, this.id));
+		sql.executeUpdate(String.format("UPDATE matches SET game_state = '%s' WHERE id = %d", this.gameState, this.id));
 	}
 
 	public String getGameState() {
 		return gameState;
+	}
+	
+	public JSONObject getGameStateJSON() {
+		return new JSONObject(gameState);
 	}
 
 	public void setGameState(String gameState) {

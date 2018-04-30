@@ -11,3 +11,4 @@
 /bin/
 /build/
 bot_server.db
+**/Runner.java

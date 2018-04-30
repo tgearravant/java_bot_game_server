@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import com.gearreald.BotGameServer.Action;
 import com.gearreald.BotGameServer.Player;
 import com.gearreald.BotGameServer.games.hearts.Hearts;
+import com.gearreald.BotGameServer.server.objects.Match;
 
 public interface Game {
 	public JSONObject getGameState();
 	public JSONObject getGameStateAsPlayer(Player p);
+	public JSONObject getGameStateAsPlayer(String playerUUID);
 	public JSONObject takeAction(Action action);
 	public void fromJSON(JSONObject json);
 	public void initialize(List<Player> p);
@@ -32,7 +33,14 @@ public interface Game {
 			return null;
 		}
 	}
-	//public static Game getGameFromState(String name, JSONObject gameState){
-		
-	//}
+	public static Game getGameFromMatch(Match m){
+		String name = m.getGameName();
+		if(name.equals("hearts")){
+			Game hearts = new Hearts();
+			hearts.fromJSON(new JSONObject(m.getGameState()));
+			return hearts;
+		}else{
+			return null;
+		}
+	}
 }
