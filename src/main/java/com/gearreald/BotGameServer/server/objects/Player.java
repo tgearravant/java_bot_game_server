@@ -1,4 +1,4 @@
-package com.gearreald.BotGameServer;
+package com.gearreald.BotGameServer.server.objects;
 
 import java.util.UUID;
 

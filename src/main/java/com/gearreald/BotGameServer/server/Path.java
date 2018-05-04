@@ -1,4 +1,4 @@
-package com.gearreald.BotGameServer.utils;
+package com.gearreald.BotGameServer.server;
 
 public class Path {
 	public final static String NEW_MATCHMAKING = "/matchmaking/create/";

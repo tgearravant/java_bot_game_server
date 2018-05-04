@@ -2,7 +2,7 @@ package com.gearreald.BotGameServer.games;
 
 import org.json.JSONObject;
 
-import com.gearreald.BotGameServer.Player;
+import com.gearreald.BotGameServer.server.objects.Player;
 
 public class Action {
 	private final Player player;

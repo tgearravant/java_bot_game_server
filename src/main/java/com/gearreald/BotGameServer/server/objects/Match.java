@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import org.json.JSONObject;
 
 import com.gearreald.BotGameServer.games.Game;
-import com.gearreald.BotGameServer.utils.SQLConnection;
+import com.gearreald.BotGameServer.server.SQLConnection;
 
 import net.tullco.tullutils.SQLUtil;
 

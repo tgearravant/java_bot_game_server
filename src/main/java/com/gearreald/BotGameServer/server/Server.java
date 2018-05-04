@@ -5,8 +5,6 @@ import static spark.debug.DebugScreen.enableDebugScreen;
 
 import com.gearreald.BotGameServer.server.controllers.MatchController;
 import com.gearreald.BotGameServer.server.controllers.MatchRequestController;
-import com.gearreald.BotGameServer.utils.Path;
-import com.gearreald.BotGameServer.utils.SQLConnection;
 
 import spark.servlet.SparkApplication;
 

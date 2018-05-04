@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import com.gearreald.BotGameServer.Player;
 import com.gearreald.BotGameServer.games.Game;
 import com.gearreald.BotGameServer.server.objects.Match;
 import com.gearreald.BotGameServer.server.objects.MatchRequest;
+import com.gearreald.BotGameServer.server.objects.Player;
 
 import spark.Request;
 import spark.Response;

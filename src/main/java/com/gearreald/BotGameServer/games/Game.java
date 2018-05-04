@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import com.gearreald.BotGameServer.Player;
 import com.gearreald.BotGameServer.games.hearts.Hearts;
 import com.gearreald.BotGameServer.server.objects.Match;
+import com.gearreald.BotGameServer.server.objects.Player;
 
 public interface Game {
 	public JSONObject getGameState();

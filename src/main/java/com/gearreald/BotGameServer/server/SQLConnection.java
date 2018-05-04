@@ -1,4 +1,4 @@
-package com.gearreald.BotGameServer.utils;
+package com.gearreald.BotGameServer.server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

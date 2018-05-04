@@ -10,9 +10,9 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.gearreald.BotGameServer.Player;
 import com.gearreald.BotGameServer.games.Action;
 import com.gearreald.BotGameServer.games.Game;
+import com.gearreald.BotGameServer.server.objects.Player;
 import com.gearreald.BotGameServer.utils.JSONUtils;
 
 import net.tullco.tullutils.Pair;
