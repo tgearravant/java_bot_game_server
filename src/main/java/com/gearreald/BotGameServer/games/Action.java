@@ -11,8 +11,8 @@ public class Action {
 		this.player = player;
 		this.action = action;
 	}
-	public static Action fromJSON(JSONObject json){
-		Player p = Player.fromJSON(json.getJSONObject("player"));
+	public static Action fromJSON(JSONObject json, String playerUuid){
+		Player p = new Player(playerUuid, 0);
 		return new Action(p, json.getJSONObject("action"));
 	}
 	public Player getPlayer() {

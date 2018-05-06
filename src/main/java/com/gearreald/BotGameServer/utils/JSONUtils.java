@@ -8,6 +8,8 @@ import org.json.JSONObject;
 
 import com.gearreald.BotGameServer.games.hearts.Card;
 
+import net.tullco.tullutils.Pair;
+
 public class JSONUtils {
 	public static JSONArray listToJSON(List<? extends JSONable> jsonables){
 		JSONArray array = new JSONArray();
@@ -43,5 +45,15 @@ public class JSONUtils {
 			json.put(key, map.get(key).intValue());
 		}
 		return json;	
+	}
+	public static JSONArray pairListToJSON(List<Pair<String, Card>> pairList) {
+		JSONArray json = new JSONArray();
+		for(Pair<String, Card> pair: pairList) {
+			JSONObject pairJson = new JSONObject();
+			pairJson.put("player_uuid", pair.getKey());
+			pairJson.put("card", pair.getValue().toJSON());
+			json.put(pairJson);
+		}
+		return json;
 	}
 }

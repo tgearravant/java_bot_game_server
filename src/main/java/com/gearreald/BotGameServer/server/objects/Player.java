@@ -39,7 +39,6 @@ public class Player implements JSONable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + botId;
 		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
 		return result;
 	}
@@ -49,11 +48,9 @@ public class Player implements JSONable {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof Player))
+		if (getClass() != obj.getClass())
 			return false;
 		Player other = (Player) obj;
-		if (botId != other.botId)
-			return false;
 		if (uuid == null) {
 			if (other.uuid != null)
 				return false;

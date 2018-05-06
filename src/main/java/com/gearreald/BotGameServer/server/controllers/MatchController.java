@@ -26,10 +26,13 @@ public class MatchController {
 			if(match == null){
 				jsonResponse.put("request_status", "error").put("message", "match does not exist");
 			}else{
-				jsonResponse.put("request_status", "success");
 				Game g = Game.getGameFromMatch(match);
 				JSONObject gameState = g.getGameStateAsPlayer(playerUUID);
-				jsonResponse.put("message", gameState);
+				if(gameState == null) {
+					return jsonResponse.put("request_status", "error").put("message", "Could not get a game state for that player. Does that player exist in this match?");
+				}
+
+				jsonResponse.put("request_status", "success").put("message", gameState);
 			}
 		}
 		return jsonResponse;
@@ -39,14 +42,15 @@ public class MatchController {
 		JSONObject jsonResponse = new JSONObject();
 		try{
 			JSONObject requestJSON = new JSONObject(request.body());
-			Action a = Action.fromJSON(requestJSON);
-			if(!request.queryParams().contains("match_id")){
+			if(!request.queryParams().contains("match_id")&& !request.queryParams().contains("player_uuid")){
 				jsonResponse.put("message", "missing required parameters").put("request_status", "error");
 			}else{
 				int matchId = Integer.parseInt(request.queryParams("match_id"));
+				String playerUuid = request.queryParams("player_uuid");
+				Action a = Action.fromJSON(requestJSON, playerUuid);
 				Match match = Match.getMatchById(matchId);
 				if(match == null){
-					jsonResponse.put("request_status", "error").put("message", "match does not exist");
+					return jsonResponse.put("request_status", "error").put("message", "match does not exist");
 				}else{
 					jsonResponse.put("request_status", "success");
 					Game g = Game.getGameFromMatch(match);
@@ -61,6 +65,8 @@ public class MatchController {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
+			System.out.println(jsonResponse.toString());
+			System.out.println(request.body());
 			jsonResponse.put("request_status", "error").put("message", sw.toString());
 		}
 		return jsonResponse;
