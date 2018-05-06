@@ -241,7 +241,9 @@ public class Hearts implements Game {
 					&& leadCard == null)
 				return actionResult.put("action_result", "error").put("error_message", "The leading player hasn't played a card?");
 			Player twoOfClubsHolder = this.getPlayerByCard(Card.TWO_OF_CLUBS);
-			if(twoOfClubsHolder != null && twoOfClubsHolder.equals(this.currentPlayer))
+			if(twoOfClubsHolder != null
+					&& twoOfClubsHolder.equals(this.currentPlayer)
+					&& !cardToPlay.equals(Card.TWO_OF_CLUBS))
 				return actionResult.put("action_result", "error").put("error_message", "PLAY THE TWO OF CLUBS!!!");
 			if(!this.currentPlayer.equals(this.leadingPlayer)
 					&& this.stage.equals("play")
