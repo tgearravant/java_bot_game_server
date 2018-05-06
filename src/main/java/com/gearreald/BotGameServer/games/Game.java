@@ -17,6 +17,9 @@ public interface Game {
 	public void initialize(List<Player> p);
 	public int getRequiredPlayers();
 	public String getName();
+	public boolean isCompleted();
+	public Player getWinningPlayer();
+	public JSONObject getFinalStatistics();
 	public static int getRequiredPlayersOfGame(String name){
 		if(name.equals("hearts")){
 			Game hearts = new Hearts();

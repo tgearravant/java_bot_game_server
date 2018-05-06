@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import com.gearreald.BotGameServer.games.Action;
 import com.gearreald.BotGameServer.games.Game;
 import com.gearreald.BotGameServer.server.objects.Match;
+import com.gearreald.BotGameServer.server.objects.Statistics;
 
 import spark.Request;
 import spark.Response;
@@ -58,6 +59,9 @@ public class MatchController {
 					jsonResponse.put("message", actionResult);
 					match.setGameState(g.getGameState().toString());
 					match.save();
+					if(g.isCompleted()) {
+						Statistics.createStatistics(matchId, g);
+					}
 				}
 			}
 		}catch(Exception e){

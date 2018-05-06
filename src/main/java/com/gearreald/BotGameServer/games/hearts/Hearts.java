@@ -480,4 +480,21 @@ public class Hearts implements Game {
 	public JSONObject getGameStateAsPlayer(String playerUUID) {
 		return this.getGameStateAsPlayer(this.getPlayerByUUID(playerUUID));
 	}
+
+	@Override
+	public boolean isCompleted() {
+		return this.winningPlayer != null;
+	}
+
+	@Override
+	public Player getWinningPlayer() {
+		return this.winningPlayer;
+	}
+
+	@Override
+	public JSONObject getFinalStatistics() {
+		if(this.isCompleted())
+			return new JSONObject().put("winning_player", this.winningPlayer.toJSON());
+		return null;
+	}
 }
