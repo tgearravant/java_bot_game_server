@@ -240,6 +240,8 @@ public class Hearts implements Game {
 					&& this.stage.equals("play")
 					&& leadCard == null)
 				return actionResult.put("action_result", "error").put("error_message", "The leading player hasn't played a card?");
+			if(this.getPlayerByCard(new Card("clubs", 1)).equals(this.currentPlayer))
+				return actionResult.put("action_result", "error").put("error_message", "PLAY THE TWO OF CLUBS!!!");
 			if(!this.currentPlayer.equals(this.leadingPlayer)
 					&& this.stage.equals("play")
 					&& !(cardToPlay.getSuit().equals(leadCard.getSuit())
