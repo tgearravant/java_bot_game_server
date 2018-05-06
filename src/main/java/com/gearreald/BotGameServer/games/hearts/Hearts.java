@@ -115,7 +115,7 @@ public class Hearts implements Game {
 	}
 
 	private void setLeadingPlayerTo2OfClubs() {
-		this.currentPlayer = getPlayerByCard(new Card("clubs", 1));
+		this.currentPlayer = getPlayerByCard(Card.TWO_OF_CLUBS);
 		this.leadingPlayer = this.currentPlayer;
 	}
 	public List<Card> getPlayerPasses(Player p){
@@ -240,7 +240,8 @@ public class Hearts implements Game {
 					&& this.stage.equals("play")
 					&& leadCard == null)
 				return actionResult.put("action_result", "error").put("error_message", "The leading player hasn't played a card?");
-			if(this.getPlayerByCard(new Card("clubs", 1)).equals(this.currentPlayer))
+			Player twoOfClubsHolder = this.getPlayerByCard(Card.TWO_OF_CLUBS);
+			if(twoOfClubsHolder != null && twoOfClubsHolder.equals(this.currentPlayer))
 				return actionResult.put("action_result", "error").put("error_message", "PLAY THE TWO OF CLUBS!!!");
 			if(!this.currentPlayer.equals(this.leadingPlayer)
 					&& this.stage.equals("play")
@@ -257,7 +258,7 @@ public class Hearts implements Game {
 			if(this.currentPlayer.equals(this.leadingPlayer)
 					&& this.stage.equals("play")
 					&& this.previousRounds.size() == 0
-					&& !cardToPlay.equals(new Card("clubs", 1))){
+					&& !cardToPlay.equals(Card.TWO_OF_CLUBS)){
 				return actionResult.put("action_result", "error").put("error_message", "you must lead the two of clubs");
 			}
 			playerHand.remove(cardToPlay);

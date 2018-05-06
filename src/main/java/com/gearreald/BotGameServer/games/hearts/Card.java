@@ -9,6 +9,7 @@ import com.gearreald.BotGameServer.utils.JSONable;
 
 public class Card implements Comparable<Card>, JSONable {
 	public static String[] SUITS = {"hearts", "spades", "clubs", "diamonds"};
+	public static Card TWO_OF_CLUBS = new Card("clubs",1);
 	private final String suit;
 	private final int value;
 	public Card(String suit, int value){
