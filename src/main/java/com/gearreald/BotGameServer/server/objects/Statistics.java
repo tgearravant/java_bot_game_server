@@ -24,7 +24,7 @@ public class Statistics {
 		String statement = "INSERT INTO statistics (game_name, match_id, winning_bot_id, winning_player_uuid, info) VALUES ('%s', %d, %d, '%s', '%s')";
 		sql.executeInsert(
 				String.format(
-						statement, gameName, winningBotId, winningPlayerUuid, info 
+						statement, gameName, matchId, winningBotId, winningPlayerUuid, info 
 						));
 	}
 }
