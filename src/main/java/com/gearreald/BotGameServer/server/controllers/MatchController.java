@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import org.json.JSONObject;
 
 import com.gearreald.BotGameServer.games.Action;
+import com.gearreald.BotGameServer.games.ActionResult;
 import com.gearreald.BotGameServer.games.Game;
 import com.gearreald.BotGameServer.server.objects.Match;
 import com.gearreald.BotGameServer.server.objects.Statistics;
@@ -55,8 +56,8 @@ public class MatchController {
 				}else{
 					jsonResponse.put("request_status", "success");
 					Game g = Game.getGameFromMatch(match);
-					JSONObject actionResult = g.takeAction(a);
-					jsonResponse.put("message", actionResult);
+					ActionResult actionResult = g.takeAction(a);
+					jsonResponse.put("message", actionResult.toJSON());
 					match.setGameState(g.getGameState().toString());
 					match.save();
 					if(g.isCompleted()) {

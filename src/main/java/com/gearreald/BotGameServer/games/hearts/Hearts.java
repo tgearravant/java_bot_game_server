@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.gearreald.BotGameServer.games.Action;
+import com.gearreald.BotGameServer.games.ActionResult;
 import com.gearreald.BotGameServer.games.Game;
 import com.gearreald.BotGameServer.server.objects.Player;
 import com.gearreald.BotGameServer.utils.JSONUtils;
@@ -209,19 +210,18 @@ public class Hearts implements Game {
 	}
 
 	@Override
-	public JSONObject takeAction(Action action) {
+	public ActionResult takeAction(Action action) {
 		Player player = action.getPlayer();
 		Card cardToPlay = Card.fromJSON(action.getAction());
 		List<Card> playerHand = getPlayerHand(player);
-		JSONObject actionResult = new JSONObject();
 		if(!playerHand.contains(cardToPlay)){
-			return actionResult.put("action_result", "error").put("error_message", "player doesn't have the specified card");
+			return new ActionResult(true, "player doesn't have the specified card");
 		}
 		if(!currentPlayer.equals(player)){
-			return actionResult.put("action_result", "error").put("error_message", "it's not this player's turn");
+			return new ActionResult(true, "it's not this player's turn");
 		}
 		if(winningPlayer != null){
-			return actionResult.put("action_result", "error").put("error_message", "the game is already over");
+			return new ActionResult(true, "The game is over! No more cards required. Go home.");
 		}
 		if (this.stage.equals("pass")) {
 			this.cardsToPass.add(Pair.of(player.getUUID(), cardToPlay));
@@ -234,34 +234,32 @@ public class Hearts implements Game {
 		}
 		else {
 			Card leadCard = this.cardsOnTable.get(this.leadingPlayer.getUUID());
-			if(this.winningPlayer != null)
-				return actionResult.put("action_result", "error").put("error_message", "The game is over! No more cards required. Go home.");
 			if(!this.currentPlayer.equals(this.leadingPlayer)
 					&& this.stage.equals("play")
 					&& leadCard == null)
-				return actionResult.put("action_result", "error").put("error_message", "The leading player hasn't played a card?");
+				return new ActionResult(true, "The leading player hasn't played a card?");
 			Player twoOfClubsHolder = this.getPlayerByCard(Card.TWO_OF_CLUBS);
 			if(twoOfClubsHolder != null
 					&& twoOfClubsHolder.equals(this.currentPlayer)
 					&& !cardToPlay.equals(Card.TWO_OF_CLUBS))
-				return actionResult.put("action_result", "error").put("error_message", "PLAY THE TWO OF CLUBS!!!");
+				return new ActionResult(true, "PLAY THE TWO OF CLUBS!!!");
 			if(!this.currentPlayer.equals(this.leadingPlayer)
 					&& this.stage.equals("play")
 					&& !(cardToPlay.getSuit().equals(leadCard.getSuit())
 							|| !playerHandContainsSuit(currentPlayer, leadCard.getSuit()))){
-				return actionResult.put("action_result", "error").put("error_message", "you must follow suit");
+				return new ActionResult(true, "you must follow suit");
 			}
 			if(this.currentPlayer.equals(this.leadingPlayer)
 					&& this.stage.equals("play")
 					&& cardToPlay.getSuit().equals("hearts")
 					&& !canLeadHearts(currentPlayer)){
-				return actionResult.put("action_result", "error").put("error_message", "hearts is not broken");
+				return new ActionResult(true, "hearts is not broken. Lead something else.");
 			}
 			if(this.currentPlayer.equals(this.leadingPlayer)
 					&& this.stage.equals("play")
 					&& this.previousRounds.size() == 0
 					&& !cardToPlay.equals(Card.TWO_OF_CLUBS)){
-				return actionResult.put("action_result", "error").put("error_message", "you must lead the two of clubs");
+				return new ActionResult(true, "you must lead the two of clubs");
 			}
 			playerHand.remove(cardToPlay);
 			cardsOnTable.put(player.getUUID(), cardToPlay);
@@ -292,7 +290,7 @@ public class Hearts implements Game {
 				winningPlayer = getPlayerByUUID(winningUUID);
 			}
 		}
-		return actionResult.put("action_result", "success");
+		return new ActionResult(false, "success");
 	}
 
 	private int cardsRemainingInHands(){
