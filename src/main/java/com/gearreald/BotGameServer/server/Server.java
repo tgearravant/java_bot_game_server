@@ -19,7 +19,7 @@ public class Server implements SparkApplication {
 		initialConfiguration();
     	getRouting();
     	postRouting();
-    	System.out.print("Server Fully Configured");
+    	System.out.println("Server Fully Configured");
 	}
 	public static void initialConfiguration(){
 		SQLConnection.runMigrations();
