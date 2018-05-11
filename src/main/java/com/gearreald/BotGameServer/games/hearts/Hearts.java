@@ -44,7 +44,7 @@ public class Hearts implements Game {
 		JSONObject json = new JSONObject();
 		json.put("stage", stage)
 			.put("current_player", currentPlayer.toJSON())
-			.put("cards_to_pass", JSONUtils.pairListToJSON(cardsToPass))
+			.put("cards_to_pass", JSONUtils.pairListToJSON("player_uuid", "card", cardsToPass))
 			.put("cards_on_table", JSONUtils.jsonMapToJSON(cardsOnTable))
 			.put("dealer", this.dealer.toJSON())
 			.put("leading_player", leadingPlayer.toJSON())

@@ -25,16 +25,16 @@ public class JSONUtils {
 		}
 		return json;
 	}
-	public static JSONObject jsonableListMapToJSON(Map<String, List<Card>> hands){
+	public static JSONObject jsonableListMapToJSON(Map<String, ? extends List<? extends JSONable>> hands){
 		JSONObject json = new JSONObject();
 		for(String key: hands.keySet()){
 			json.put(key, listToJSON(hands.get(key)));
 		}
 		return json;
 	}
-	public static JSONArray jsonableMapListToJSON(List<Map<String, Card>> mapList){
+	public static JSONArray jsonableMapListToJSON(List<? extends Map<String, ? extends JSONable>> mapList){
 		JSONArray array = new JSONArray();
-		for(Map<String, Card> map: mapList){
+		for(Map<String, ? extends JSONable> map: mapList){
 			array.put(jsonMapToJSON(map));
 		}
 		return array;
@@ -46,12 +46,12 @@ public class JSONUtils {
 		}
 		return json;	
 	}
-	public static JSONArray pairListToJSON(List<Pair<String, Card>> pairList) {
+	public static JSONArray pairListToJSON(String pairKeyJsonKey, String pairValueJsonKey, List<Pair<String, Card>> pairList) {
 		JSONArray json = new JSONArray();
 		for(Pair<String, Card> pair: pairList) {
 			JSONObject pairJson = new JSONObject();
-			pairJson.put("player_uuid", pair.getKey());
-			pairJson.put("card", pair.getValue().toJSON());
+			pairJson.put(pairKeyJsonKey, pair.getKey());
+			pairJson.put(pairValueJsonKey, pair.getValue().toJSON());
 			json.put(pairJson);
 		}
 		return json;
