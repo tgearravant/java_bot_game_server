@@ -39,7 +39,7 @@ public class MatchRequestController {
 						MatchRequest matchRequest = currentMatchRequests.get(i);
 						players.add(new Player(matchRequest.getPlayerUUID(), matchRequest.getBotId()));
 					}
-					Game g = Game.getInstanceOfGame("hearts", players);
+					Game g = Game.getInitializedInstanceOfGame("hearts", players);
 					Match m = Match.createMatch(g);
 					for(MatchRequest mr: currentMatchRequests){
 						mr.setSatisfied(true);

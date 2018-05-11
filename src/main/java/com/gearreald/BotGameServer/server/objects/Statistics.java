@@ -8,13 +8,6 @@ import com.gearreald.BotGameServer.server.SQLConnection;
 import net.tullco.tullutils.SQLUtil;
 
 public class Statistics {
-//	private int id;
-//	private String gameName;
-//	private int matchId;
-//	private int winningBotId;
-//	private String winningPlayerUuid;
-//	private JSONObject info;
-	
 	public static void createStatistics(int matchId, Game g) throws SQLException {
 		SQLUtil sql = SQLConnection.getConnection();
 		String gameName = g.getName();
