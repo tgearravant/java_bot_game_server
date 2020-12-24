@@ -11,8 +11,8 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'application'
 
-targetCompatibility = '1.8'
 
 
 // In this section you declare where to find the dependencies of your project
@@ -24,6 +24,16 @@ repositories {
   }
 }
 
+application {
+  mainClass = 'com.gearreald.BotGameServer.Launcher'
+}
+
+jar {
+  manifest {
+    attributes 'Main-Class': 'com.gearreald.BotGameServer.Launcher'
+  }
+}
+
 publishing {
   publications {
     maven(MavenPublication) {
@@ -32,8 +42,8 @@ publishing {
       version '1.0.0'
       
       from components.java
-      artifact sourcesJar
-      artifact javadocJar
+//      artifact sourcesJar
+//      artifact javadocJar
     }
   }
 }
@@ -47,12 +57,12 @@ dependencies {
   implementation('org.flywaydb:flyway-core:5.0.7')
   implementation group: 'com.sparkjava', name: 'spark-debug-tools', version: '0.5'
   
-  compile 'org.json:json:20180130'
+  api 'org.json:json:20180130'
   // Declare the dependency for your favourite test framework you want to use in your tests.
   // TestNG is also supported by the Gradle Test task. Just change the
   // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
   // 'test.useTestNG()' to your build script.
-  testCompile 'junit:junit:4.12'
+  testImplementation 'junit:junit:4.12'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
