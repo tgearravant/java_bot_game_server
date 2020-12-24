@@ -13,6 +13,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'application'
 
+mainClassName = 'com.gearreald.BotGameServer.Launcher'
 
 
 // In this section you declare where to find the dependencies of your project
