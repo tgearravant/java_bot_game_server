@@ -13,15 +13,12 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'application'
 
-mainClassName = 'com.gearreald.BotGameServer.Launcher'
-
-
 // In this section you declare where to find the dependencies of your project
 repositories {
   mavenCentral()
   jcenter()
   maven {
-    url "http://gearreald.com/maven2"
+    url 'http://gearreald.com/maven2'
   }
 }
 
@@ -33,6 +30,15 @@ jar {
   manifest {
     attributes 'Main-Class': 'com.gearreald.BotGameServer.Launcher'
   }
+}
+
+task fatJar(type: Jar) {
+  manifest {
+    attributes 'Main-Class': 'com.gearreald.BotGameServer.Launcher'
+  }
+  archiveBaseName = 'FatBotGameServer'
+  from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+  with jar
 }
 
 publishing {

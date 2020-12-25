@@ -24,7 +24,7 @@ public class Server implements SparkApplication {
 	public static void initialConfiguration(){
 		SQLConnection.runMigrations();
 		staticFiles.location("/public");
-		port(12345);
+		port(12346);
 		enableDebugScreen();
 	}
 	public static void getRouting(){
