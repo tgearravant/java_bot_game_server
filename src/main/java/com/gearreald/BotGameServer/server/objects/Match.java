@@ -18,7 +18,7 @@ public class Match {
 	private String gameState;
 	private final  LocalDateTime updatedTime;
 
-	private final int TIMEOUT = 30;
+	private final int TIMEOUT = 60;
 	
 	public static Match createMatch(Game game) throws SQLException{
 		SQLUtil sql = SQLConnection.getConnection();
