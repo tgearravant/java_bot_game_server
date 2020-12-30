@@ -1,7 +1,6 @@
 package com.gearreald.BotGameServer.server;
 
 import static spark.Spark.*;
-import static spark.debug.DebugScreen.enableDebugScreen;
 
 import com.gearreald.BotGameServer.server.controllers.MatchController;
 import com.gearreald.BotGameServer.server.controllers.MatchRequestController;
@@ -11,7 +10,7 @@ import spark.servlet.SparkApplication;
 public class Server implements SparkApplication {
 	public static void staticLaunch(){
 		configureInstance();
-	}
+ 	}
 	public void init(){
 		configureInstance();
 	}
@@ -25,7 +24,6 @@ public class Server implements SparkApplication {
 		SQLConnection.runMigrations();
 		staticFiles.location("/public");
 		port(12346);
-		enableDebugScreen();
 	}
 	public static void getRouting(){
 		get(Path.MATCHMAKING_STATUS, MatchRequestController.matchRequestGet);
