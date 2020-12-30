@@ -53,6 +53,8 @@ public class MatchController {
 				Match match = Match.getMatchById(matchId);
 				if(match == null){
 					return jsonResponse.put("request_status", "error").put("message", "match does not exist");
+				}else if (match.isTimedOut()){
+					return jsonResponse.put("request_status", "error").put("message", "match has timed out");
 				}else{
 					jsonResponse.put("request_status", "success");
 					Game g = Game.getGameFromMatch(match);
