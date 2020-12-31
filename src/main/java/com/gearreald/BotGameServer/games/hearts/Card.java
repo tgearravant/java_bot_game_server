@@ -16,6 +16,15 @@ public class Card implements Comparable<Card>, JSONable {
 		this.suit = suit;
 		this.value = value;
 	}
+
+	public int pointValue(){
+		if(suit.equals("hearts"))
+			return 1;
+		if(suit.equals("spades") && value == 11)
+			return 13;
+		return 0;
+	}
+
 	public static List<Card> createDeck(){
 		List<Card> deck = new ArrayList<Card>();
 		for (int i=1; i <=13; i++){

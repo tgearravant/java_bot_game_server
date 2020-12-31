@@ -243,6 +243,15 @@ public class Hearts implements Game {
 					&& twoOfClubsHolder.equals(this.currentPlayer)
 					&& !cardToPlay.equals(Card.TWO_OF_CLUBS))
 				return new ActionResult(true, "PLAY THE TWO OF CLUBS!!!");
+			if (this.cardsOnTable.containsValue(Card.TWO_OF_CLUBS)
+					&& cardToPlay.pointValue() > 0){
+				int pointSum = 0;
+				for (Card c: this.hands.get(currentPlayer.getUUID())){
+					pointSum+=c.pointValue();
+				}
+				if (pointSum != 26)
+					return new ActionResult(true, "You can't play a point card in the first round.");
+			}
 			if(!this.currentPlayer.equals(this.leadingPlayer)
 					&& this.stage.equals("play")
 					&& !(cardToPlay.getSuit().equals(leadCard.getSuit())
